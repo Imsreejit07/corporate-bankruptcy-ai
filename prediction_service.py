@@ -93,20 +93,12 @@ def _load_booster(expected_features: tuple[str, ...]) -> xgb.Booster:
 class LoadedModel:
     config: ModelConfig
     booster: xgb.Booster
-    calibrator: Any
 
     @classmethod
     def load(cls) -> "LoadedModel":
         config = _load_config()
         booster = _load_booster(config.features)
-        try:
-            calibrator = joblib.load(CALIBRATOR_PATH)
-        except Exception as exc:
-            raise ModelArtifactError(f"Unable to load the Platt calibrator: {exc}") from exc
-
-        if getattr(calibrator, "n_features_in_", None) != 1:
-            raise ModelArtifactError("The Platt calibrator must accept one raw probability feature.")
-        return cls(config=config, booster=booster, calibrator=calibrator)
+        return cls(config=config, booster=booster)
 
     def predict(self, values: dict[str, float]) -> dict[str, Any]:
         ordered_values = np.asarray(
@@ -118,9 +110,11 @@ class LoadedModel:
 
         matrix = xgb.DMatrix(ordered_values, feature_names=list(self.config.features))
         raw_probability = float(self.booster.predict(matrix)[0])
-        calibrated_probability = float(
-            self.calibrator.predict_proba(np.asarray([[raw_probability]], dtype=np.float64))[0, 1]
-        )
+
+        # Platt scaling (Logistic Regression on raw probability):
+        # coef = 3.1184013906623225, intercept = -3.9089253782211704
+        logit = 3.1184013906623225 * raw_probability - 3.9089253782211704
+        calibrated_probability = 1.0 / (1.0 + math.exp(-logit))
         calibrated_probability = min(max(calibrated_probability, 0.0), 1.0)
 
         # XGBoost's native pred_contribs is its TreeSHAP implementation. The
