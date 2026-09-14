@@ -12,7 +12,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import joblib
 import numpy as np
 import xgboost as xgb
 
@@ -20,7 +19,6 @@ import xgboost as xgb
 MODEL_DIR = Path(__file__).resolve().parent / "model_artifacts"
 CONFIG_PATH = MODEL_DIR / "config.json"
 MODEL_PATH = MODEL_DIR / "xgb_model.json"
-CALIBRATOR_PATH = MODEL_DIR / "platt_calibrator.pkl"
 
 FEATURE_LABELS = {
     "X1": "Current assets",
