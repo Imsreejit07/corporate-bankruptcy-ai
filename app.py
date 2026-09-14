@@ -4,7 +4,7 @@ import math
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -72,8 +72,9 @@ def predict(request: PredictRequest) -> dict:
 
 
 @app.get("/", include_in_schema=False)
-def index() -> FileResponse:
-    return FileResponse(STATIC_DIR / "index.html")
+def index() -> HTMLResponse:
+    index_file = STATIC_DIR / "index.html"
+    return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
 
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
