@@ -5,8 +5,6 @@ description = "Add your description here"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.115.0",
-    "numpy>=1.26.0",
-    "xgboost>=2.0.0",
 ]
 
 [[tool.uv.index]]

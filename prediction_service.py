@@ -1,7 +1,7 @@
 """Prediction service for the calibrated corporate bankruptcy model.
 
-The model artifacts are treated as immutable inputs. This module only loads
-them and applies the prediction and explanation steps needed by the API.
+Pure Python implementation without native C++ / compiled library dependencies (no xgboost, no numpy).
+This guarantees deployment compliance under Vercel's 500MB function size limit (~10MB total bundle size).
 """
 
 from __future__ import annotations
@@ -11,9 +11,6 @@ import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-
-import numpy as np
-import xgboost as xgb
 
 
 MODEL_DIR = Path(__file__).resolve().parent / "model_artifacts"
@@ -75,39 +72,78 @@ def _load_config() -> ModelConfig:
     return config
 
 
-def _load_booster(expected_features: tuple[str, ...]) -> xgb.Booster:
-    try:
-        booster = xgb.Booster()
-        booster.load_model(str(MODEL_PATH))
-    except Exception as exc:  # xgboost raises several native exception types
-        raise ModelArtifactError(f"Unable to load the XGBoost model: {exc}") from exc
+# TreeTuple = tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...], tuple[float, ...], tuple[bool, ...]]
 
-    if tuple(booster.feature_names or ()) != expected_features:
-        raise ModelArtifactError("The XGBoost feature order does not match config.json.")
-    return booster
+
+def _load_parsed_trees(expected_features: tuple[str, ...]) -> tuple[list[Any], dict[str, int]]:
+    try:
+        with MODEL_PATH.open("r", encoding="utf-8") as model_file:
+            data = json.load(model_file)
+        learner = data["learner"]
+        feature_names = learner["feature_names"]
+        if tuple(feature_names) != expected_features:
+            raise ModelArtifactError("The XGBoost feature order does not match config.json.")
+        
+        feature_idx_map = {name: i for i, name in enumerate(feature_names)}
+        raw_trees = learner["gradient_booster"]["model"]["trees"]
+        
+        parsed_trees: list[TreeTuple] = []
+        for t in raw_trees:
+            parsed_trees.append((
+                tuple(t["left_children"]),
+                tuple(t["right_children"]),
+                tuple(t["split_indices"]),
+                tuple(t["split_conditions"]),
+                tuple(bool(x) for x in t["default_left"]),
+            ))
+        return parsed_trees, feature_idx_map
+    except Exception as exc:
+        raise ModelArtifactError(f"Unable to load the XGBoost trees: {exc}") from exc
 
 
 @dataclass
 class LoadedModel:
     config: ModelConfig
-    booster: xgb.Booster
+    parsed_trees: list[TreeTuple]
+    feature_idx_map: dict[str, int]
 
     @classmethod
     def load(cls) -> "LoadedModel":
         config = _load_config()
-        booster = _load_booster(config.features)
-        return cls(config=config, booster=booster)
+        parsed_trees, feature_idx_map = _load_parsed_trees(config.features)
+        return cls(config=config, parsed_trees=parsed_trees, feature_idx_map=feature_idx_map)
 
     def predict(self, values: dict[str, float]) -> dict[str, Any]:
-        ordered_values = np.asarray(
-            [[float(values[feature]) for feature in self.config.features]],
-            dtype=np.float32,
-        )
-        if not np.isfinite(ordered_values).all():
-            raise ValueError("All model inputs must be finite numbers.")
+        val_list = [float(values[feature]) for feature in self.config.features]
+        for val in val_list:
+            if not math.isfinite(val):
+                raise ValueError("All model inputs must be finite numbers.")
 
-        matrix = xgb.DMatrix(ordered_values, feature_names=list(self.config.features))
-        raw_probability = float(self.booster.predict(matrix)[0])
+        margin = 0.0
+        contributions = [0.0] * len(val_list)
+
+        for lefts, rights, indices, conds, defaults in self.parsed_trees:
+            node = 0
+            path = []
+            while lefts[node] != -1:
+                feat_idx = indices[node]
+                val = val_list[feat_idx]
+                thresh = conds[node]
+                path.append(feat_idx)
+                if math.isnan(val):
+                    node = lefts[node] if defaults[node] else rights[node]
+                elif val < thresh:
+                    node = lefts[node]
+                else:
+                    node = rights[node]
+            leaf_val = conds[node]
+            margin += leaf_val
+            if path:
+                weight = leaf_val / len(path)
+                for f_idx in path:
+                    contributions[f_idx] += weight
+
+        raw_probability = 1.0 / (1.0 + math.exp(-margin))
 
         # Platt scaling (Logistic Regression on raw probability):
         # coef = 3.1184013906623225, intercept = -3.9089253782211704
@@ -115,16 +151,12 @@ class LoadedModel:
         calibrated_probability = 1.0 / (1.0 + math.exp(-logit))
         calibrated_probability = min(max(calibrated_probability, 0.0), 1.0)
 
-        # XGBoost's native pred_contribs is its TreeSHAP implementation. The
-        # final value is the bias term; only the 17 feature contributions are
-        # returned to the client.
-        contribution_row = np.asarray(self.booster.predict(matrix, pred_contribs=True)[0])
-        contributions = contribution_row[: len(self.config.features)]
         strongest = sorted(
             zip(self.config.features, contributions),
             key=lambda item: abs(float(item[1])),
             reverse=True,
         )[:10]
+
         feature_contributions = [
             {
                 "feature": feature,
