@@ -1,0 +1,312 @@
+You are the lead full-stack ML engineer for this project.
+
+I have imported the complete ZIP containing my finished Corporate Bankruptcy Prediction ML project. The trained model already exists and MUST NOT be retrained or replaced.
+
+Your job is to inspect the entire imported project first, understand how the existing model works, and then build a professional full-stack web application around it.
+
+IMPORTANT:
+- Do NOT modify the trained model unless absolutely necessary for integration.
+- Do NOT retrain the model.
+- Do NOT fabricate model behavior or input mappings.
+- Reuse the existing model artifacts and prediction logic.
+- Preserve the existing feature names, feature order, preprocessing assumptions, calibration logic, thresholds, and SHAP explanation logic.
+- If something is unclear, inspect the existing notebook/code/configuration before making assumptions.
+
+KNOWN MODEL ARTIFACTS:
+- xgb_model.json
+- platt_calibrator.pkl
+- config.json
+
+The application should use the existing calibrated XGBoost bankruptcy-risk model.
+
+==================================================
+PHASE 1 — INSPECT BEFORE BUILDING
+==================================================
+
+First inspect the entire project structure.
+
+Identify:
+1. The trained model loading process.
+2. The exact 17 input features and their order.
+3. How the model prediction is calculated.
+4. How Platt calibration is applied.
+5. The decision threshold.
+6. Low-risk and high-risk probability boundaries.
+7. How SHAP values are calculated.
+8. Existing prediction/explanation functions.
+9. Existing dependencies.
+10. Any existing Gradio implementation.
+
+Do not immediately rewrite files.
+
+After inspection, summarize the existing architecture and explain which files/functions you will reuse.
+
+==================================================
+PHASE 2 — BACKEND
+==================================================
+
+Create a proper backend API around the existing ML model.
+
+Preferred architecture:
+
+Frontend
+    ↓
+REST API
+    ↓
+Prediction service
+    ↓
+Calibrated XGBoost model
+    ↓
+Prediction + SHAP explanation
+
+Use Python for the ML backend.
+
+The backend must provide an endpoint similar to:
+
+POST /api/predict
+
+Input:
+{
+  "X1": value,
+  "X2": value,
+  ...
+  "X18": value
+}
+
+Remember that the project contains 17 financial variables and the feature numbering may skip X16. Do NOT invent X16. Use the exact feature list from config.json / existing code.
+
+The API response should contain:
+
+- bankruptcy_probability
+- risk_category
+- decision
+- suggested_action
+- decision_threshold
+- low_risk_limit
+- high_risk_limit
+- feature_contributions
+
+The prediction must use the calibrated probability, not the raw XGBoost probability, wherever the existing project specifies calibration.
+
+==================================================
+PHASE 3 — SHAP EXPLANATION
+==================================================
+
+Reuse the existing SHAP logic if it exists.
+
+For every prediction, return the strongest feature contributions for that specific company.
+
+Each contribution should contain:
+
+- feature name
+- input value
+- SHAP value
+- absolute SHAP value
+- direction
+
+Direction should clearly communicate:
+
+positive SHAP → pushes prediction toward higher bankruptcy risk
+
+negative SHAP → pushes prediction toward lower bankruptcy risk
+
+Return the top 8–10 contributing features.
+
+Do NOT describe SHAP values as causal financial effects.
+
+==================================================
+PHASE 4 — FRONTEND
+==================================================
+
+Replace the simple Gradio-style interface with a professional ML web application.
+
+Create a clean, modern dashboard called:
+
+Corporate Bankruptcy Risk Assessment
+
+The interface should contain:
+
+1. Header
+   - Corporate Bankruptcy Risk Assessment
+   - Short description:
+     "Machine-learning decision-support prototype using calibrated XGBoost."
+
+2. Financial input panel
+
+Create fields for all 17 model features using their actual names from the project.
+
+Current known mappings include:
+
+X1  - Current assets
+X2  - Cost of goods sold
+X3  - Depreciation and amortization
+X4  - EBITDA
+X5  - Inventory
+X6  - Net income
+X7  - Total receivables
+X8  - Market value
+X9  - Net sales
+X10 - Total assets
+X11 - Total long-term debt
+X12 - EBIT
+X13 - Gross profit
+X14 - Total current liabilities
+X15 - Retained earnings
+X17 - Total liabilities
+X18 - Total operating expenses
+
+Verify these against config.json and the existing project before implementing.
+
+3. Prediction button
+
+Use a clear CTA such as:
+
+"Assess Bankruptcy Risk"
+
+4. Results panel
+
+Display:
+
+Bankruptcy Probability
+XX.XX%
+
+Risk Category
+LOW RISK / MODERATE RISK / HIGH RISK
+
+Decision
+DO NOT FLAG / FLAG FOR REVIEW
+
+Suggested Action
+appropriate existing action
+
+5. Risk visualization
+
+Create a probability/risk meter showing:
+
+0% ─────────────── 100%
+
+with the actual prediction clearly marked.
+
+Also show:
+- Low-risk boundary
+- Decision threshold
+- High-risk boundary
+
+Use the actual thresholds from config.json.
+
+6. Prediction explanation
+
+Create a horizontal SHAP bar chart for the top contributing features.
+
+The chart must distinguish:
+
+Positive SHAP:
+higher bankruptcy-risk contribution
+
+Negative SHAP:
+lower bankruptcy-risk contribution
+
+Sort features by absolute SHAP magnitude.
+
+7. Explanation text
+
+Below the chart, show something like:
+
+"Strongest factors influencing this prediction"
+
+Then list the major factors with their SHAP direction.
+
+Do not claim that a feature causes bankruptcy.
+
+8. Disclaimer
+
+Include:
+
+"This prototype is for academic demonstration only. It does not constitute financial, credit, investment, audit, or legal advice. Risk categories and decision thresholds are modeling choices from this study, not industry standards."
+
+Also:
+
+"SHAP values explain the behavior of the underlying XGBoost model and should not be interpreted as causal financial effects."
+
+==================================================
+PHASE 5 — USER EXPERIENCE
+==================================================
+
+Add:
+
+- Clear/reset inputs
+- Input validation
+- Loading state while prediction is running
+- Error messages
+- Responsive layout
+- Professional typography
+- Clean cards
+- Consistent spacing
+- Accessible labels
+- Number formatting
+- Probability shown as percentage
+- Charts that update after every prediction
+
+Do not make it look like a generic tutorial project.
+
+It should look like an academic ML decision-support prototype suitable for a university project demonstration and portfolio.
+
+==================================================
+PHASE 6 — TESTING
+==================================================
+
+After implementation, test the application using at least:
+
+TEST A:
+A realistic financially healthy company profile.
+
+TEST B:
+A realistic financially distressed company profile.
+
+TEST C:
+A borderline/moderate-risk profile.
+
+Verify that:
+
+- The API works.
+- The frontend communicates correctly with the backend.
+- The model loads successfully.
+- Calibration works.
+- Probability is between 0 and 1.
+- Risk classification follows the existing thresholds.
+- SHAP values correspond to the actual model prediction.
+- Charts update correctly.
+- No feature-order mismatch exists.
+- No X16 is accidentally introduced.
+- Existing model artifacts remain unchanged.
+
+==================================================
+PHASE 7 — DEPLOYMENT
+==================================================
+
+Configure the project so it can run directly on Replit.
+
+The final application should have:
+
+- One clear start command.
+- Correct port configuration.
+- Production-compatible server configuration.
+- No dependency on Google Colab.
+- No dependency on the original Gradio interface.
+- All required Python/Node dependencies declared.
+
+The final result should be a single working web application.
+
+==================================================
+IMPORTANT ENGINEERING RULE
+==================================================
+
+Before changing anything, inspect the imported ZIP and understand what already exists.
+
+Reuse existing working prediction code whenever possible.
+
+Do not create a second competing implementation of the ML model.
+
+The trained model is the source of truth.
+
+Build the application around it.

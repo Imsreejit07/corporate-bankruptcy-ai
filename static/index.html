@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#08111f" />
+    <meta
+      name="description"
+      content="Corporate Bankruptcy Risk Assessment using a calibrated XGBoost model."
+    />
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <title>Corporate Bankruptcy Risk Assessment</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">CRA</div>
+          <div>
+            <p class="eyebrow">Decision support prototype</p>
+            <h1>Corporate Bankruptcy Risk Assessment</h1>
+          </div>
+        </div>
+        <div class="model-status" aria-label="Model status">
+          <span class="status-dot"></span>
+          <span>Calibrated model online</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="intro-grid">
+          <div>
+            <p class="eyebrow accent">Academic ML study</p>
+            <h2>Turn financial signals into a reviewable risk assessment.</h2>
+            <p class="intro-copy">
+              Machine-learning decision-support prototype using calibrated XGBoost.
+              Enter the 17 variables in the same scale used by the underlying study
+              to inspect a probability, threshold decision, and model explanation.
+            </p>
+          </div>
+          <div class="intro-note">
+            <span class="note-index">01</span>
+            <div>
+              <strong>Model-aware by design</strong>
+              <p>
+                The original feature order, Platt calibration, and study thresholds
+                are preserved in the API.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <div class="workspace-grid">
+          <section class="panel input-panel" aria-labelledby="inputs-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Assessment inputs</p>
+                <h2 id="inputs-title">Financial profile</h2>
+              </div>
+              <span class="field-count">17 variables</span>
+            </div>
+            <p class="panel-description">
+              Provide numeric values for each model variable. No X16 is used by this
+              trained model.
+            </p>
+
+            <form id="assessment-form" novalidate>
+              <div id="feature-fields" class="feature-grid"></div>
+              <div id="form-error" class="form-error" role="alert" hidden></div>
+              <div class="form-actions">
+                <button type="submit" class="primary-button" id="submit-button">
+                  <span class="button-label">Assess Bankruptcy Risk</span>
+                  <span class="button-spinner" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="secondary-button" id="reset-button">
+                  Clear inputs
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel results-panel" aria-labelledby="results-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Assessment output</p>
+                <h2 id="results-title">Risk profile</h2>
+              </div>
+              <span id="result-state" class="result-state">Awaiting profile</span>
+            </div>
+
+            <div id="empty-results" class="empty-results">
+              <div class="empty-orbit" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+              <h3>Ready for assessment</h3>
+              <p>
+                Complete the financial profile to see the calibrated bankruptcy
+                probability and its strongest model signals.
+              </p>
+            </div>
+
+            <div id="results-content" hidden>
+              <div class="score-grid">
+                <div class="probability-card">
+                  <p class="metric-label">Bankruptcy probability</p>
+                  <div class="probability-value" id="probability-value">—</div>
+                  <p class="metric-subtext">Calibrated probability</p>
+                </div>
+                <div class="decision-card">
+                  <div class="decision-row">
+                    <p class="metric-label">Risk category</p>
+                    <span id="risk-category" class="risk-badge">—</span>
+                  </div>
+                  <div class="decision-row">
+                    <p class="metric-label">Decision</p>
+                    <strong id="decision-value">—</strong>
+                  </div>
+                  <div class="decision-action">
+                    <span class="action-kicker">Suggested action</span>
+                    <p id="suggested-action">—</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="meter-card">
+                <div class="section-title-row">
+                  <div>
+                    <p class="eyebrow">Probability map</p>
+                    <h3>Where this assessment lands</h3>
+                  </div>
+                  <span id="meter-value" class="meter-value">—</span>
+                </div>
+                <div class="risk-meter-wrap">
+                  <div class="risk-meter" aria-label="Risk probability meter">
+                    <div class="meter-segment low"></div>
+                    <div class="meter-segment moderate"></div>
+                    <div class="meter-segment high"></div>
+                    <div class="meter-marker prediction-marker" id="prediction-marker">
+                      <span></span>
+                    </div>
+                    <div class="meter-marker boundary-marker low-boundary" id="low-marker">
+                      <span></span>
+                    </div>
+                    <div class="meter-marker boundary-marker threshold-marker" id="threshold-marker">
+                      <span></span>
+                    </div>
+                    <div class="meter-marker boundary-marker high-boundary" id="high-marker">
+                      <span></span>
+                    </div>
+                  </div>
+                  <div class="meter-scale">
+                    <span>0%</span>
+                    <span>100%</span>
+                  </div>
+                  <div class="meter-legend">
+                    <span><i class="legend-swatch low"></i>Low-risk boundary <b id="low-label">—</b></span>
+                    <span><i class="legend-swatch threshold"></i>Decision threshold <b id="threshold-label">—</b></span>
+                    <span><i class="legend-swatch high"></i>High-risk boundary <b id="high-label">—</b></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="explanation-card">
+                <div class="section-title-row">
+                  <div>
+                    <p class="eyebrow">Model explanation</p>
+                    <h3>Strongest factors influencing this prediction</h3>
+                  </div>
+                  <span class="explanation-note">Top 10 by absolute SHAP value</span>
+                </div>
+                <div class="chart-legend">
+                  <span><i class="legend-swatch positive"></i>Higher bankruptcy-risk contribution</span>
+                  <span><i class="legend-swatch negative"></i>Lower bankruptcy-risk contribution</span>
+                </div>
+                <div id="contribution-chart" class="contribution-chart"></div>
+                <div id="explanation-list" class="explanation-list"></div>
+                <p class="shap-note">
+                  SHAP values explain the behavior of the underlying XGBoost model
+                  and should not be interpreted as causal financial effects.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="disclaimer">
+        <span class="disclaimer-mark">i</span>
+        <p>
+          This prototype is for academic demonstration only. It does not constitute
+          financial, credit, investment, audit, or legal advice. Risk categories and
+          decision thresholds are modeling choices from this study, not industry
+          standards.
+        </p>
+      </footer>
+    </div>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

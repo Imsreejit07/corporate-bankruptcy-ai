@@ -1,0 +1,1 @@
+- [TreeSHAP fallback](tree-shap-fallback.md) — when standalone SHAP cannot resolve on the project’s Python runtime, XGBoost native pred_contribs preserves model-native contributions.
