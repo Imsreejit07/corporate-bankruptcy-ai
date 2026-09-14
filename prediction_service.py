@@ -87,7 +87,7 @@ def _load_parsed_trees(expected_features: tuple[str, ...]) -> tuple[list[Any], d
         feature_idx_map = {name: i for i, name in enumerate(feature_names)}
         raw_trees = learner["gradient_booster"]["model"]["trees"]
         
-        parsed_trees: list[TreeTuple] = []
+        parsed_trees: list[Any] = []
         for t in raw_trees:
             parsed_trees.append((
                 tuple(t["left_children"]),
@@ -104,7 +104,7 @@ def _load_parsed_trees(expected_features: tuple[str, ...]) -> tuple[list[Any], d
 @dataclass
 class LoadedModel:
     config: ModelConfig
-    parsed_trees: list[TreeTuple]
+    parsed_trees: list[Any]
     feature_idx_map: dict[str, int]
 
     @classmethod
