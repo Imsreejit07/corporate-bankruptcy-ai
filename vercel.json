@@ -1,16 +1,9 @@
 {
   "version": 2,
-  "env": {
-    "VERCEL_SUPPORT_LARGE_FUNCTIONS": "1"
-  },
   "rewrites": [
     {
       "source": "/static/(.*)",
       "destination": "/static/$1"
-    },
-    {
-      "source": "/api/health",
-      "destination": "/api/health/index.py"
     },
     {
       "source": "/(.*)",
