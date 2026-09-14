@@ -1,0 +1,429 @@
+We now have a fully working Corporate Bankruptcy Risk Assessment web application.
+
+The ML functionality is working correctly, including:
+- calibrated XGBoost prediction
+- probability output
+- risk classification
+- decision threshold
+- suggested action
+- probability/risk visualization
+- SHAP-based local explanation
+
+DO NOT change the ML model, prediction logic, calibration, thresholds, feature mapping, or SHAP calculations.
+
+This task is ONLY a UI/UX redesign and frontend refinement.
+
+The current application works, but the design needs to look significantly more professional, polished, and intentional.
+
+Think of the visual quality of a premium financial analytics / quantitative decision-support dashboard rather than a generic AI demo.
+
+==================================================
+1. OVERALL DESIGN DIRECTION
+==================================================
+
+Redesign the application around this visual concept:
+
+"Quantitative Financial Risk Intelligence Dashboard"
+
+Style:
+- sophisticated
+- modern
+- minimal
+- technical
+- premium
+- data-oriented
+- professional
+- suitable for a university ML project demonstration and portfolio
+
+Keep the dark theme, but refine it.
+
+Use:
+- deep navy/charcoal background
+- subtle borders
+- restrained gradients
+- high contrast typography
+- cyan/blue as the primary accent
+- green for low risk
+- amber for moderate risk
+- red/pink for high risk
+
+Avoid:
+- excessive glowing effects
+- excessive gradients
+- oversized empty cards
+- unnecessary decorative elements
+- generic AI imagery
+- excessive rounded "bubble" components
+
+The interface should feel like software used by analysts.
+
+==================================================
+2. HEADER
+==================================================
+
+Redesign the top section.
+
+Create a compact professional header containing:
+
+Left:
+CRA
+Corporate Bankruptcy Risk Assessment
+
+Small eyebrow:
+DECISION SUPPORT PROTOTYPE
+
+Right:
+● CALIBRATED MODEL ONLINE
+
+Under the header, use a compact hero section rather than the current extremely large headline.
+
+Suggested headline:
+
+"Corporate financial risk, quantified."
+
+Supporting text:
+
+"Evaluate bankruptcy probability using a calibrated XGBoost model and inspect the financial signals driving each assessment."
+
+Keep the academic disclaimer available, but move it to a compact information section near the bottom instead of taking excessive space at the top.
+
+==================================================
+3. INPUT SECTION
+==================================================
+
+Transform the current long form into a financial profile panel.
+
+Title:
+
+Financial profile
+
+Subtitle:
+
+17 model variables
+
+Group the variables into logical sections WITHOUT changing their actual feature mapping.
+
+Possible grouping:
+
+BALANCE SHEET
+X1 Current assets
+X5 Inventory
+X10 Total assets
+X14 Total current liabilities
+X17 Total liabilities
+
+INCOME & PROFITABILITY
+X2 Cost of goods sold
+X3 Depreciation and amortization
+X4 EBITDA
+X6 Net income
+X9 Net sales
+X12 EBIT
+X13 Gross profit
+X18 Total operating expenses
+
+MARKET & CAPITAL
+X7 Total receivables
+X8 Market value
+X11 Total long-term debt
+X15 Retained earnings
+
+IMPORTANT:
+These are only UI groupings.
+Do not change feature order sent to the model.
+
+Clearly display:
+
+"X16 is not used by the trained model."
+
+Make the inputs compact enough that the form does not become unnecessarily tall.
+
+Use a responsive 2-column grid on desktop.
+
+Each input should have:
+- feature name
+- X number
+- numeric field
+- subtle focus state
+
+Do not add unnecessary icons to every input.
+
+==================================================
+4. RESULTS SECTION
+==================================================
+
+Make the result the visual centerpiece.
+
+Create a large "Assessment" panel.
+
+Top row:
+
+ASSESSMENT OUTPUT
+Assessment complete
+
+Main result:
+
+BANKRUPTCY PROBABILITY
+
+8.03%
+
+CALIBRATED PROBABILITY
+
+Make the percentage visually dominant.
+
+Beside it show:
+
+RISK
+MODERATE
+
+DECISION
+DO NOT FLAG
+
+ACTION
+Continue monitoring
+
+Use appropriate semantic styling for the risk category.
+
+==================================================
+5. RISK METER
+==================================================
+
+Redesign the probability map into a proper risk scale.
+
+Title:
+
+Risk position
+
+Subtitle:
+
+Where this assessment lands
+
+Create a horizontal scale:
+
+0% ───────────────────────────── 100%
+
+Show clearly:
+
+Low-risk boundary: 7%
+Decision threshold: 11%
+High-risk boundary: 15%
+
+Place the current probability marker precisely.
+
+The marker should visually communicate whether the result is:
+- low
+- moderate
+- high
+
+Add a small annotation above the marker:
+
+8.03%
+
+Make this visualization look like an actual analytics instrument rather than a basic progress bar.
+
+==================================================
+6. SHAP EXPLANATION
+==================================================
+
+This section is already functional, but improve its presentation.
+
+Title:
+
+Why the model reached this assessment
+
+Subtitle:
+
+Top contributing model signals
+
+Keep the top 10 SHAP features.
+
+The chart MUST show the full feature names.
+
+Do NOT truncate them with:
+"..."
+
+Instead:
+- allocate more horizontal space to labels
+- use responsive layout
+- or show full names via tooltip if space is constrained
+
+Each row should contain:
+
+Feature name
+Input value
+SHAP contribution
+Direction
+
+Example:
+
+Current assets
+Input: 2,800
+SHAP: -1.2515
+Lower risk
+
+Market value
+Input: 3,200
+SHAP: -0.6583
+Lower risk
+
+Depreciation and amortization
+Input: 900
+SHAP: +0.5717
+Higher risk
+
+Use a centered zero line.
+
+Negative SHAP values extend left.
+
+Positive SHAP values extend right.
+
+Use:
+- blue/cyan for lower-risk contribution
+- red/pink for higher-risk contribution
+
+Keep the legend simple.
+
+==================================================
+7. CONTRIBUTION SUMMARY
+==================================================
+
+Instead of showing only the first five textual explanations, create a compact "Key signals" section.
+
+Show the top 5 contributors.
+
+Each item:
+
+01
+Current assets
+Pushes prediction toward lower bankruptcy risk
+Input value: 2,800
+
+Make these easy to scan.
+
+Do not use language implying causality.
+
+Always describe them as model contributions.
+
+==================================================
+8. LAYOUT
+==================================================
+
+Desktop:
+
+Use a balanced two-column dashboard.
+
+Left:
+Financial profile
+
+Right:
+Assessment + risk meter + model explanation
+
+Avoid making the left panel dramatically taller than the right panel.
+
+On smaller screens:
+stack sections vertically.
+
+Keep comfortable margins.
+
+Reduce unnecessary vertical scrolling.
+
+==================================================
+9. VISUAL DETAILS
+==================================================
+
+Improve:
+
+- typography hierarchy
+- spacing consistency
+- border contrast
+- input styling
+- card hierarchy
+- section separators
+- button design
+- hover states
+- focus states
+
+The primary button should read:
+
+ASSESS BANKRUPTCY RISK
+
+Make it visually prominent but not huge.
+
+Secondary button:
+
+CLEAR INPUTS
+
+Use subtle micro-interactions:
+- button hover
+- input focus
+- loading state
+- result update transition
+
+Do not add distracting animations.
+
+==================================================
+10. DATA-DENSE BUT CLEAN
+==================================================
+
+The goal is NOT to make the dashboard flashy.
+
+The goal is to make it look like a serious analytical tool.
+
+A user should immediately understand:
+
+1. What data am I entering?
+2. What is the predicted probability?
+3. What is the risk category?
+4. Is the company flagged?
+5. Where does the probability sit relative to the thresholds?
+6. Which financial variables influenced the prediction?
+
+Those six things should be visually obvious within seconds.
+
+==================================================
+11. DISCLAIMER
+==================================================
+
+Move the academic disclaimer to a compact footer/information block.
+
+Use:
+
+"This prototype is for academic demonstration only. It does not constitute financial, credit, investment, audit, or legal advice. Risk categories and decision thresholds are modeling choices from this study, not industry standards."
+
+And:
+
+"SHAP values explain the behavior of the underlying XGBoost model and should not be interpreted as causal financial effects."
+
+Keep it readable but visually subordinate to the main dashboard.
+
+==================================================
+12. IMPORTANT
+==================================================
+
+Do not alter:
+
+- xgb_model.json
+- platt_calibrator.pkl
+- config.json
+- feature mappings
+- model prediction logic
+- probability calibration
+- risk thresholds
+- SHAP calculation
+- API contract
+
+Do not retrain anything.
+
+Do not introduce mock data.
+
+Do not remove working functionality.
+
+First inspect the existing frontend implementation and then modify the existing UI rather than rebuilding the entire ML backend.
+
+After making the changes, run the application and verify that the existing test case still produces:
+
+Probability: approximately 8.03%
+Risk category: Moderate Risk
+Decision: Do Not Flag
+
+The redesign is successful only if functionality remains identical while the visual hierarchy and usability are substantially improved.

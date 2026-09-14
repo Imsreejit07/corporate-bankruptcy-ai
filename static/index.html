@@ -31,21 +31,20 @@
       <main>
         <section class="intro-grid">
           <div>
-            <p class="eyebrow accent">Academic ML study</p>
-            <h2>Turn financial signals into a reviewable risk assessment.</h2>
+            <p class="eyebrow accent">Quantitative financial risk intelligence</p>
+            <h2>Corporate financial risk, quantified.</h2>
             <p class="intro-copy">
-              Machine-learning decision-support prototype using calibrated XGBoost.
-              Enter the 17 variables in the same scale used by the underlying study
-              to inspect a probability, threshold decision, and model explanation.
+              Evaluate bankruptcy probability using a calibrated XGBoost model and
+              inspect the financial signals driving each assessment.
             </p>
           </div>
           <div class="intro-note">
             <span class="note-index">01</span>
             <div>
-              <strong>Model-aware by design</strong>
+              <strong>Model contract preserved</strong>
               <p>
-                The original feature order, Platt calibration, and study thresholds
-                are preserved in the API.
+                17 ordered variables, Platt calibration, and study thresholds remain
+                unchanged from the imported model.
               </p>
             </div>
           </div>
@@ -61,8 +60,8 @@
               <span class="field-count">17 variables</span>
             </div>
             <p class="panel-description">
-              Provide numeric values for each model variable. No X16 is used by this
-              trained model.
+              Enter values using the same scale as the underlying study. X16 is not
+              used by the trained model.
             </p>
 
             <form id="assessment-form" novalidate>
@@ -84,7 +83,7 @@
             <div class="panel-heading">
               <div>
                 <p class="eyebrow">Assessment output</p>
-                <h2 id="results-title">Risk profile</h2>
+                <h2 id="results-title">Assessment</h2>
               </div>
               <span id="result-state" class="result-state">Awaiting profile</span>
             </div>
@@ -93,7 +92,7 @@
               <div class="empty-orbit" aria-hidden="true">
                 <span></span><span></span><span></span>
               </div>
-              <h3>Ready for assessment</h3>
+                <h3>Awaiting financial profile</h3>
               <p>
                 Complete the financial profile to see the calibrated bankruptcy
                 probability and its strongest model signals.
@@ -109,7 +108,7 @@
                 </div>
                 <div class="decision-card">
                   <div class="decision-row">
-                    <p class="metric-label">Risk category</p>
+                    <p class="metric-label">Risk</p>
                     <span id="risk-category" class="risk-badge">—</span>
                   </div>
                   <div class="decision-row">
@@ -117,7 +116,7 @@
                     <strong id="decision-value">—</strong>
                   </div>
                   <div class="decision-action">
-                    <span class="action-kicker">Suggested action</span>
+                    <span class="action-kicker">Action</span>
                     <p id="suggested-action">—</p>
                   </div>
                 </div>
@@ -126,7 +125,7 @@
               <div class="meter-card">
                 <div class="section-title-row">
                   <div>
-                    <p class="eyebrow">Probability map</p>
+                    <p class="eyebrow">Risk position</p>
                     <h3>Where this assessment lands</h3>
                   </div>
                   <span id="meter-value" class="meter-value">—</span>
@@ -137,6 +136,7 @@
                     <div class="meter-segment moderate"></div>
                     <div class="meter-segment high"></div>
                     <div class="meter-marker prediction-marker" id="prediction-marker">
+                      <b id="prediction-label">—</b>
                       <span></span>
                     </div>
                     <div class="meter-marker boundary-marker low-boundary" id="low-marker">
@@ -165,15 +165,19 @@
                 <div class="section-title-row">
                   <div>
                     <p class="eyebrow">Model explanation</p>
-                    <h3>Strongest factors influencing this prediction</h3>
+                    <h3>Why the model reached this assessment</h3>
                   </div>
-                  <span class="explanation-note">Top 10 by absolute SHAP value</span>
+                  <span class="explanation-note">Top contributing model signals</span>
                 </div>
                 <div class="chart-legend">
                   <span><i class="legend-swatch positive"></i>Higher bankruptcy-risk contribution</span>
                   <span><i class="legend-swatch negative"></i>Lower bankruptcy-risk contribution</span>
                 </div>
                 <div id="contribution-chart" class="contribution-chart"></div>
+                <div class="key-signals-heading">
+                  <span>Key signals</span>
+                  <span>Top 5 contributors</span>
+                </div>
                 <div id="explanation-list" class="explanation-list"></div>
                 <p class="shap-note">
                   SHAP values explain the behavior of the underlying XGBoost model
@@ -191,7 +195,8 @@
           This prototype is for academic demonstration only. It does not constitute
           financial, credit, investment, audit, or legal advice. Risk categories and
           decision thresholds are modeling choices from this study, not industry
-          standards.
+          standards. SHAP values explain the behavior of the underlying XGBoost
+          model and should not be interpreted as causal financial effects.
         </p>
       </footer>
     </div>
