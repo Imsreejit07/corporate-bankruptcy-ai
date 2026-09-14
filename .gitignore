@@ -7,4 +7,11 @@ wheels/
 *.egg-info
 
 # Virtual environments
-.venv
+.venv/
+
+# Ignore assets and non-code directories from Vercel deployment bundle
+attached_assets/
+screenshots/
+uv.lock
+pyproject.toml
+model_artifacts/platt_calibrator.pkl

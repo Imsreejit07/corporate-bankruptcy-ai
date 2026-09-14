@@ -1,0 +1,6 @@
+# Ignore non-essential folders during Vercel build
+attached_assets
+screenshots
+uv.lock
+pyproject.toml
+model_artifacts/platt_calibrator.pkl
